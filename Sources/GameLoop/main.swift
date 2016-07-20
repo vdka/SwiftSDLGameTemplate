@@ -1,13 +1,8 @@
 
 import CSDL2
+import SDL
 
 var shouldContinue = true
-
-let baseDir = "/" + Array(#file.characters.split(separator: "/").dropLast(3)).map(String.init).joined(separator: "/")
-
-let buildDir = baseDir + "/.build/debug/"
-
-print(buildDir)
 
 let gameEngine = DynamicLib(path: buildDir + "libGameEngine.dylib")
 
@@ -16,7 +11,8 @@ let gameRenderer = DynamicLib(path: buildDir + "libGameRenderer.dylib")
 try gameEngine.load()
 try gameRenderer.load()
 
-SDL_Init(numericCast(SDL_INIT_VIDEO))
+try SDL.initialize(components: [.video])
+defer { SDL.quit() }
 
 let startScreen = SDL_GetNumVideoDisplays()
 
@@ -24,9 +20,9 @@ var window = SDL_CreateWindow(
   "SDL In Swift",
   SDL_WINDOWPOS_UNDEFINED_MASK | startScreen - 1, SDL_WINDOWPOS_UNDEFINED_MASK | startScreen - 1,
   640, 480, SDL_WINDOW_SHOWN.rawValue)
+var renderer = SDL_CreateRenderer(window, 0, SDL_RENDERER_ACCELERATED.rawValue)
 
-
-var renderer = SDL_CreateRenderer(window, 0, SDL_RENDERER_SOFTWARE.rawValue)
+var countedFrames = 0
 
 typealias UpdateFunction = @convention(c) (UnsafeMutablePointer<Void>, UnsafePointer<SDL_Event>?) -> Bool
 typealias RenderFunction = @convention(c) (UnsafeMutablePointer<Void>, OpaquePointer?, OpaquePointer?) -> Void
@@ -53,4 +49,7 @@ while (shouldContinue) {
   SDL_UpdateWindowSurface(window)
   SDL_RenderPresent(renderer)
   SDL_RenderClear(renderer)
+
+  // TODO(vkda): Actual frame rate handling
+  SDL_Delay(15)
 }
