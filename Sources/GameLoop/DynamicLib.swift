@@ -1,6 +1,14 @@
 
 import Darwin.C
 
+func curTime() -> Double {
+
+  var tv = timeval()
+  gettimeofday(&tv, nil)
+
+  return Double(tv.tv_sec) + Double(tv.tv_usec) / 1000000
+}
+
 public final class DynamicLib {
 
   public var path: String
@@ -29,7 +37,11 @@ public final class DynamicLib {
 
   public func load() throws {
 
-    guard dlopen_preflight(path) else { throw Error(.incompatibleBinary) }
+    guard dlopen_preflight(path) else {
+      if DynamicLib.lastError.hasSuffix("image not found") {
+        throw Error(.libNotFound)
+      }
+      throw Error(.incompatibleBinary) }
     handle = dlopen(path, RTLD_LAZY | RTLD_GLOBAL)
 
     guard handle != nil else { throw Error(.failedToLoadLibrary) }
@@ -46,12 +58,17 @@ public final class DynamicLib {
 
   public func reload() throws {
 
+    let startTime = curTime()
+
     // only reload if the last write did not occur when the last read did.
     guard lastWriteTime != lastReadTime else { return }
 
     print("Reloading \(path.characters.split(separator: "/").last.flatMap(String.init))")
 
     try unload()
+    while lastWriteTime == nil && curTime() - startTime < 1 {
+      usleep(1)
+    }
     try load()
 
     print("Reload successful!")
@@ -83,6 +100,7 @@ extension DynamicLib {
     var dlError: String
     enum Reason {
       case incompatibleBinary
+      case libNotFound
       case failedToLoadLibrary
       case failedToUnLoadLibrary
       case symbolNotFound

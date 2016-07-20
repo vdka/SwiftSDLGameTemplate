@@ -18,10 +18,13 @@ try gameRenderer.load()
 
 SDL_Init(numericCast(SDL_INIT_VIDEO))
 
+let startScreen = SDL_GetNumVideoDisplays()
+
 var window = SDL_CreateWindow(
   "SDL In Swift",
-  SDL_WINDOWPOS_UNDEFINED_MASK, SDL_WINDOWPOS_UNDEFINED_MASK,
+  SDL_WINDOWPOS_UNDEFINED_MASK | startScreen - 1, SDL_WINDOWPOS_UNDEFINED_MASK | startScreen - 1,
   640, 480, SDL_WINDOW_SHOWN.rawValue)
+
 
 var renderer = SDL_CreateRenderer(window, 0, SDL_RENDERER_SOFTWARE.rawValue)
 
