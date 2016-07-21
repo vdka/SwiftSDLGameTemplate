@@ -37,7 +37,7 @@ while (shouldContinue) {
   try gameEngine.reload()
   try gameRenderer.reload()
 
-  SDL_RenderClear(renderer)
+  SDL_RenderClear(renderer.pointer)
 
   var event = SDL_Event()
   SDL_PollEvent(&event)
@@ -46,12 +46,12 @@ while (shouldContinue) {
     shouldContinue = unsafeBitCast(update, to: UpdateFunction.self)(gameState, &event)
   }
   if let render = gameRenderer.getSymbol("gameRender") {
-    unsafeBitCast(render, to: RenderFunction.self)(gameState, renderer, window)
+    unsafeBitCast(render, to: RenderFunction.self)(gameState, renderer.pointer, window.pointer)
   }
 
-  SDL_UpdateWindowSurface(window)
-  SDL_RenderPresent(renderer)
-  SDL_RenderClear(renderer)
+  SDL_UpdateWindowSurface(window.pointer)
+  SDL_RenderPresent(renderer.pointer)
+  SDL_RenderClear(renderer.pointer)
 
   // TODO(vkda): Actual frame rate handling
   SDL_Delay(15)
