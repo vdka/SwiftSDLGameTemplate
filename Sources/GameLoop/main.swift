@@ -2,7 +2,7 @@
 import CSDL2
 import SDL
 
-var shouldContinue = true
+//var shouldContinue = true
 
 let gameEngine = DynamicLib(path: buildDir + "libGameEngine.dylib")
 
