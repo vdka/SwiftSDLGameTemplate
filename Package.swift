@@ -11,7 +11,6 @@ let package = Package(
   ],
   dependencies: [
     .Package(url: "https://github.com/PureSwift/CSDL2.git", majorVersion: 1),
-    //.Package(url: "../SwiftSDL2", majorVersion: 0),
     .Package(url: "https://github.com/vdka/SwiftPCG.git", majorVersion: 0)
   ]
 )

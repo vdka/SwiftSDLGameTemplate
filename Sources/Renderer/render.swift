@@ -8,6 +8,6 @@ func render(gameState: UnsafeMutablePointer<Void>, renderer: OpaquePointer!, win
 
   var rect = SDL_Rect(x: 0, y: 0, w: 1, h: 1)
 
-  SDL_SetRenderDrawColor(renderer, 0xff, 0xcc, 0xff, 0xff)
+  SDL_SetRenderDrawColor(renderer, 0x00, 0xcc, 0xff, 0xff)
   SDL_RenderDrawRect(renderer, &rect)
 }

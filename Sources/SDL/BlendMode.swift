@@ -1,9 +1,12 @@
-//
-//  BlendMode.swift
-//  swiftGame
-//
-//  Created by Ethan Jackwitz on 7/20/16.
-//
-//
 
-import Foundation
+import CSDL2
+
+extension SDL {
+
+  public enum BlendingMode: UInt32 {
+    case none = 0
+    case alpha
+    case additive
+    case modulate
+  }
+}

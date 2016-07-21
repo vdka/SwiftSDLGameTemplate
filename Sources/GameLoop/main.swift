@@ -16,11 +16,14 @@ defer { SDL.quit() }
 
 let startScreen = SDL_GetNumVideoDisplays()
 
-var window = SDL_CreateWindow(
-  "SDL In Swift",
-  SDL_WINDOWPOS_UNDEFINED_MASK | startScreen - 1, SDL_WINDOWPOS_UNDEFINED_MASK | startScreen - 1,
-  640, 480, SDL_WINDOW_SHOWN.rawValue)
-var renderer = SDL_CreateRenderer(window, 0, SDL_RENDERER_ACCELERATED.rawValue)
+//var window = SDL.createWindow(titled: "SDL Swift Template",
+//                              x: Int32.WindowPosition.centered | (startScreen - 2),
+//                              y: Int32.WindowPosition.centered | (startScreen - 2),
+//                              w: 368, h: 320, flags: [.shown])
+//
+//var renderer = SDL.createRenderer(forWindow: window)
+
+var (window, renderer) = try SDL.createWindowAndRenderer(w: 200, h: 360, windowFlags: [.shown])
 
 var countedFrames = 0
 
