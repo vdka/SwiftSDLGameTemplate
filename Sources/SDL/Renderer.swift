@@ -33,12 +33,27 @@ extension SDL {
   public final class Renderer: Passthrough {
     public init() { self.pointer = nil }
     public var pointer: OpaquePointer?
-  }
 
-  public static func createRenderer(forWindow window: Window, indexOfDriver: Int32 = -1, flags: RendererFlag = .accelerated) -> Renderer {
+    deinit {
+      SDL_DestroyRenderer(pointer)
+    }
+  }
+}
+
+extension SDL.Renderer {
+
+  public static func create(forWindow window: SDL.Window, indexOfDriver: Int32 = -1, flags: SDL.RendererFlag = .accelerated) -> SDL.Renderer {
 
     let renderer = SDL_CreateRenderer(window.pointer, indexOfDriver, flags.rawValue)
 
-    return Renderer(renderer)
+    return SDL.Renderer(renderer)
+  }
+
+  public func drawLine(x1: Int32, y1: Int32, x2: Int32, y2: Int32) throws {
+
+    let result = SDL_RenderDrawLine(pointer, x1, y1, x2, y2)
+
+    guard result == 0 else { throw SDL.Error.last }
   }
 }
+

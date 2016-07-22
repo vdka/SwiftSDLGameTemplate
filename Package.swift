@@ -4,7 +4,7 @@ let package = Package(
   name: "swiftGame",
   targets: [
     Target(name: "SDL"),
-    Target(name: "Shared"),
+    Target(name: "Shared", dependencies: [.Target(name: "SDL")]),
     Target(name: "GameLoop", dependencies: [.Target(name: "SDL")]),
     Target(name: "Engine", dependencies: [.Target(name: "Shared")]),
     Target(name: "Renderer", dependencies: [.Target(name: "Shared")])

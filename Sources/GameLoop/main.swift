@@ -2,7 +2,7 @@
 import CSDL2
 import SDL
 
-//var shouldContinue = true
+var shouldContinue = true
 
 let gameEngine = DynamicLib(path: buildDir + "libGameEngine.dylib")
 
@@ -24,6 +24,8 @@ let startScreen = SDL_GetNumVideoDisplays()
 //var renderer = SDL.createRenderer(forWindow: window)
 
 var (window, renderer) = try SDL.createWindowAndRenderer(w: 200, h: 360, windowFlags: [.shown])
+
+window.setPosition(x: Int32.WindowPosition.centered | (startScreen - 2), y: Int32.WindowPosition.centered | (startScreen - 2))
 
 var countedFrames = 0
 
@@ -56,3 +58,4 @@ while (shouldContinue) {
   // TODO(vkda): Actual frame rate handling
   SDL_Delay(15)
 }
+

@@ -78,17 +78,40 @@ extension SDL {
   public final class Window: Passthrough {
     public init() { self.pointer = nil }
     public var pointer: OpaquePointer?
+
+    deinit {
+      SDL_DestroyWindow(pointer)
+    }
   }
 
-  /// NOTE - If creating a window this has the potential to return 0 
-  public static func createWindow(titled title: String, x: Int32, y: Int32, w: Int32, h: Int32, flags: WindowFlag) -> Window {
+  // TODO(vdka): shift this to the Window namespace
+  /// NOTE - If creating a window this has the potential to return 0
+}
+
+extension SDL.Window {
+
+  public static func create(titled title: String, x: Int32, y: Int32, w: Int32, h: Int32, flags: SDL.WindowFlag) -> SDL.Window {
 
     let window = SDL_CreateWindow(title, x, y, w, h, flags.rawValue)
 
-    return Window(window)
+    return SDL.Window(window)
+  }
+
+  public func setPosition(x: Int32, y: Int32) {
+
+    SDL_SetWindowPosition(pointer, x, y)
+  }
+
+  public var size: (w: Int32, h: Int32) {
+
+    var (w, h): (Int32, Int32) = (0, 0)
+    SDL_GetWindowSize(pointer, &w, &h)
+    return (w: w, h: h)
   }
 }
 
+
+// This can become a some form of Type maybe.
 extension Int32 {
 
   public enum WindowPosition {
