@@ -3,10 +3,10 @@ import CSDL2
 
 extension SDL {
 
-  public static func createWindowAndRenderer(w: Int32, h: Int32, windowFlags: WindowFlag) throws -> (Window, Renderer) {
+  public static func createWindowAndRenderer(w: Int32, h: Int32, windowFlags: Window.Flag) throws -> (Window, Renderer) {
 
-    let window = Window()
-    let renderer = Renderer()
+    var window = Window()
+    var renderer = Renderer()
     let success = SDL_CreateWindowAndRenderer(w, h, windowFlags.rawValue, &window.pointer, &renderer.pointer)
     guard success == 0 else { throw Error.last }
     return (window, renderer)
@@ -28,7 +28,7 @@ extension SDLOptionSet {
   }
 }
 
-public protocol Passthrough: class, NilLiteralConvertible {
+public protocol Passthrough: NilLiteralConvertible {
 
   init()
   var pointer: OpaquePointer? { get set }

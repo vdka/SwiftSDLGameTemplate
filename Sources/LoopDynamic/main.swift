@@ -20,7 +20,7 @@ while (shouldContinue) {
 
   try gameEngine.reload()
 
-  guard let loop = gameEngine.getSymbol("loop") else { print("loop function missing"); continue }
+  guard let loop = gameEngine.getSymbol("update") else { print("loop function missing"); continue }
 
   shouldContinue = unsafeBitCast(loop, to: LoopFunction.self)(memory)
 }

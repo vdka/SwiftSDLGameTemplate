@@ -1,17 +1,17 @@
 import PackageDescription
 
 let package = Package(
-  name: "swiftGame",
+  name: "SwiftSDLGameTemplate",
   targets: [
     Target(name: "SDL"),
     Target(name: "Shared"),
-    Target(name: "Engine",   dependencies: [.Target(name: "Shared"), .Target(name: "SDL")]),
+    Target(name: "Engine",   dependencies: [.Target(name: "Shared"), .Target(name: "SDL"), .Target(name: "Renderer")]),
     Target(name: "Renderer", dependencies: [.Target(name: "Shared"), .Target(name: "SDL")]),
-    Target(name: "GameLoop")
+    Target(name: "LoopStatic", dependencies: [.Target(name: "Engine")]),
+    Target(name: "LoopDynamic")
   ],
   dependencies: [
-    .Package(url: "https://github.com/PureSwift/CSDL2.git", majorVersion: 1),
-    .Package(url: "https://github.com/vdka/SwiftPCG.git", majorVersion: 0)
+    .Package(url: "https://github.com/PureSwift/CSDL2.git", majorVersion: 1)
   ]
 )
 

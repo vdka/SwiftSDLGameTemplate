@@ -1,22 +1,33 @@
 
+import CSDL2
 import SDL
 import Shared
 
 @_silgen_name("initialize")
-func initialize() -> UnsafeMutablePointer<Byte>? {
+public func initialize() -> UnsafeMutablePointer<Byte>? {
 
-  var gameState = GameState(score: 450)
+  do {
 
-  var (window, renderer) = try SDL.createWindowAndRenderer(w: 200, h: 360, windowFlags: [.shown])
+    try SDL.initialize(components: .video)
 
-  window.setPosition(x: Int32.WindowPosition.centered | (startScreen - 2), y: Int32.WindowPosition.centered | (startScreen - 2))
+    var (window, renderer) = try SDL.createWindowAndRenderer(w: 200, h: 360, windowFlags: [.shown])
 
-  //initialize SDL Renderer and Window
+    let startScreen = SDL_GetNumVideoDisplays()
+    window.setPosition(x: Int32.WindowPosition.centered | (startScreen - 2), y: Int32.WindowPosition.centered | (startScreen - 2))
 
-  let memory = UnsafeMutablePointer<Byte>(allocatingCapacity: sizeofValue(gameState))
+    var gameState = GameState(score: 450, xPos: 0, yPos: 0)
 
-  gameState.write(to: memory)
+    let totalMemoryRequired = sizeofValue(window) + sizeofValue(renderer) + sizeofValue(gameState)
 
-  return memory
+    let memory = UnsafeMutablePointer<Byte>(allocatingCapacity: totalMemoryRequired)
+
+    write(&window, &renderer, &gameState, to: memory)
+
+    return memory
+  } catch {
+
+    print("ERROR: Encounted during initialization \(error)")
+    return nil
+  }
 }
 

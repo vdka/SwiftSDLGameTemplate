@@ -1,6 +1,7 @@
 
 import CSDL2
 
+// Used to namespace static functions.
 public enum SDL {}
 
 extension SDL {

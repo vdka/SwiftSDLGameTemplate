@@ -1,19 +1,20 @@
 
-//import CSDL2
-//import SDL
-//import SwiftPCG
-//import Shared
+import CSDL2
+import SDL
+import Shared
 
-//func render(with gameState: GameState) {
-//
-//  let (renderer, window) = (SDL.Renderer(renderer), SDL.Window(window))
-//
-//  var rect = SDL_Rect(x: 0, y: 0, w: 1, h: 1)
-//
-//  SDL_SetRenderDrawColor(renderer.pointer, 0x00, 0xcc, 0xff, 0xff)
-//
-//  try? renderer.drawLine(x1: 0, y1: 0, x2: window.size.w, y2: window.size.h)
-//
-//  SDL_RenderDrawRect(renderer.pointer, &rect)
-//}
+public func render(_ gameState: GameState, to window: Window, with renderer: Renderer) throws {
 
+  try renderer.setDrawColor(r: 0x22, g: 0x22, b: 0x22, a: 0x22)
+  try renderer.clear()
+
+  try renderer.setDrawColor(r: 0xff, g: 0xff, b: 0xff, a: 0xff)
+
+  var rect = Rect(x: gameState.xPos, y: gameState.yPos, w: 20, h: 20)
+
+  try renderer.drawLine(x1: 0, y1: 0, x2: window.size.w, y2: window.size.h)
+
+  try renderer.fill(rect: &rect)
+
+  renderer.present()
+}

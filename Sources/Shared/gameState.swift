@@ -1,15 +1,18 @@
 
-import SwiftPCG
-
 public typealias Byte = UInt8
 
 public struct GameState {
 
   public var score: Int
 
-  public init(score: Int) {
+  public var xPos: Int32
+  public var yPos: Int32
+
+  public init(score: Int, xPos: Int32, yPos: Int32) {
 
     self.score = score
+    self.xPos = xPos
+    self.yPos = yPos
   }
 }
 
@@ -17,30 +20,16 @@ extension GameState {
 
   public init(from pointer: UnsafeMutablePointer<Byte>) {
 
-    self.score = pointer.object(at: 0)
-  }
+    var currentOffset = 0
+    
+    self.score = pointer.object(at: currentOffset)
+    currentOffset += sizeofValue(score)
 
-  public mutating func write(to destinationPointer: UnsafeMutablePointer<Byte>) {
+    self.xPos = pointer.object(at: currentOffset)
+    currentOffset += sizeofValue(xPos)
 
-    let nBytes = sizeofValue(self)
-
-    print("size of GameState: \(sizeofValue(self))")
-
-    withUnsafePointer(&self) {
-
-      let valuePointer = unsafeBitCast($0, to: UnsafePointer<Byte>.self)
-      for byteOffset in 0..<nBytes {
-        destinationPointer.advanced(by: byteOffset).pointee = valuePointer.advanced(by: byteOffset).pointee
-      }
-    }
-  }
-}
-
-extension UnsafeMutablePointer {
-
-  func object<T>(at offset: Int) -> T {
-
-    return UnsafePointer<T>(self.advanced(by: offset)).pointee
+    self.yPos = pointer.object(at: currentOffset)
+    currentOffset += sizeofValue(yPos)
   }
 }
 
