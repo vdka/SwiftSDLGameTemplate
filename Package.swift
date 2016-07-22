@@ -4,10 +4,10 @@ let package = Package(
   name: "swiftGame",
   targets: [
     Target(name: "SDL"),
-    Target(name: "Shared", dependencies: [.Target(name: "SDL")]),
-    Target(name: "GameLoop", dependencies: [.Target(name: "SDL")]),
-    Target(name: "Engine", dependencies: [.Target(name: "Shared")]),
-    Target(name: "Renderer", dependencies: [.Target(name: "Shared")])
+    Target(name: "Shared"),
+    Target(name: "Engine",   dependencies: [.Target(name: "Shared"), .Target(name: "SDL")]),
+    Target(name: "Renderer", dependencies: [.Target(name: "Shared"), .Target(name: "SDL")]),
+    Target(name: "GameLoop")
   ],
   dependencies: [
     .Package(url: "https://github.com/PureSwift/CSDL2.git", majorVersion: 1),
