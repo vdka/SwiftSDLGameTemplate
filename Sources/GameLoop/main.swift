@@ -4,9 +4,11 @@ try gameEngine.load()
 
 var shouldContinue = true
 
+typealias Byte = UInt8
+
 // If return nil there was an error during initialization
-typealias InitFunction = @convention(c) () -> UnsafeMutablePointer<Void>?
-typealias LoopFunction = @convention(c) (UnsafeMutablePointer<Void>?) -> Bool
+typealias InitFunction = @convention(c) () -> UnsafeMutablePointer<Byte>?
+typealias LoopFunction = @convention(c) (UnsafeMutablePointer<Byte>?) -> Bool
 
 guard let initialize = gameEngine.getSymbol("initialize") else { fatalError("Failure to launch! No 'initialize' symbol found!") }
 

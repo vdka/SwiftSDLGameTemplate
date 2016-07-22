@@ -4,17 +4,9 @@ import CSDL2
 
 import Shared
 
-@_silgen_name("initialize")
-func initialize() -> UnsafeMutablePointer<Void>? {
-
-  var gameState = GameState(score: 450)
-
-  return withUnsafeMutablePointer(&gameState) { UnsafeMutablePointer<Void>($0) }
-}
-
 // returns the intent to continue
 @_silgen_name("loop")
-func update(with memory: UnsafeMutablePointer<Void>!) -> Bool {
+func update(with memory: UnsafeMutablePointer<Byte>!) -> Bool {
 
   let gameState = GameState(from: memory)
 
