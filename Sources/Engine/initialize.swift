@@ -13,7 +13,7 @@ public func initialize() -> UnsafeMutablePointer<Byte>? {
     var (window, renderer) = try SDL.createWindowAndRenderer(w: 200, h: 360, windowFlags: [.shown])
 
     let startScreen = SDL_GetNumVideoDisplays()
-    window.setPosition(x: Int32.WindowPosition.centered | (startScreen - 2), y: Int32.WindowPosition.centered | (startScreen - 2))
+    window.setPosition(x: Int32.WindowPosition.centered, y: 0)
 
     var gameState = GameState(score: 450, xPos: 0, yPos: 0)
 

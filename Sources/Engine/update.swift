@@ -28,20 +28,32 @@ public func update(with memory: UnsafeMutablePointer<Byte>!) -> Bool {
   var event = SDL_Event()
   SDL_PollEvent(&event)
 
-  if event.isKeyDown {
+  // MARK: - Read KeyboardState
 
-    if keyboard[.down] {
-      gameState.yPos += 1
-    }
-    if keyboard[.up] {
-      gameState.yPos -= 1
-    }
-    if keyboard[.right] {
-      gameState.xPos += 1
-    }
-    if keyboard[.left] {
-      gameState.xPos -= 1
-    }
+  if keyboard[.down] {
+    gameState.yPos += 1
+  }
+  if keyboard[.up] {
+    gameState.yPos -= 1
+  }
+  if keyboard[.right] {
+    gameState.xPos += 1
+  }
+  if keyboard[.left] {
+    gameState.xPos -= 1
+  }
+
+  if gameState.xPos < 0 {
+    gameState.xPos = window.size.w
+  }
+  if gameState.xPos > window.size.w {
+    gameState.xPos = 0
+  }
+  if gameState.yPos < 0 {
+    gameState.yPos = window.size.h
+  }
+  if gameState.yPos > window.size.h {
+    gameState.yPos = 0
   }
 
   switch event.type {
@@ -61,13 +73,15 @@ public func update(with memory: UnsafeMutablePointer<Byte>!) -> Bool {
   }
 
   // TODO(vdka): proper frame syncronization
-  SDL_Delay(32) // ~ 30 fps
-
-  if gameState.score % 100 == 0 { print(gameState) }
-
   gameState.score = gameState.score &+ 1
 
-  write(&window, &renderer, &gameState, to: memory)
+  var newTick = SDL_GetTicks()
+
+  let dTicks = newTick - newTick
+
+  SDL_Delay(UInt32(1000.0 / 60.0 - Double(dTicks)))
+
+  write(&window, &renderer, &gameState, &newTick, to: memory)
 
   return true
 }

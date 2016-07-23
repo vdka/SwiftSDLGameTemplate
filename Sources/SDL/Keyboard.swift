@@ -19,3 +19,21 @@ public var keyboard: Keyboard {
   return Keyboard()
 }
 
+public struct SimpleKeyboard: OptionSet {
+
+  public init(rawValue: UInt64) { self.rawValue = rawValue }
+  public let rawValue: UInt64
+
+  public static let
+    a = 0b0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0001 as SimpleKeyboard,
+    b = 0b0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0010 as SimpleKeyboard
+}
+
+extension SimpleKeyboard: IntegerLiteralConvertible {
+
+  public init(integerLiteral: UInt64) {
+
+    self.rawValue = integerLiteral
+  }
+}
+
