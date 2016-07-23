@@ -2,7 +2,6 @@
 import SDL
 import CSDL2
 import Shared
-import Renderer
 
 // returns the intent to continue
 @_silgen_name("update")
@@ -29,17 +28,20 @@ public func update(with memory: UnsafeMutablePointer<Byte>!) -> Bool {
   var event = SDL_Event()
   SDL_PollEvent(&event)
 
-  if SDL_KEYDOWN.rawValue == event.type && event.key.keysym.sym == numericCast(SDLK_DOWN) {
-    gameState.yPos += 1
-  }
-  if SDL_KEYDOWN.rawValue == event.type && event.key.keysym.sym == numericCast(SDLK_UP) {
-    gameState.yPos -= 1
-  }
-  if SDL_KEYDOWN.rawValue == event.type && event.key.keysym.sym == numericCast(SDLK_RIGHT) {
-    gameState.xPos += 1
-  }
-  if SDL_KEYDOWN.rawValue == event.type && event.key.keysym.sym == numericCast(SDLK_LEFT) {
-    gameState.xPos -= 1
+  if event.isKeyDown {
+
+    if keyboard[.down] {
+      gameState.yPos += 1
+    }
+    if keyboard[.up] {
+      gameState.yPos -= 1
+    }
+    if keyboard[.right] {
+      gameState.xPos += 1
+    }
+    if keyboard[.left] {
+      gameState.xPos -= 1
+    }
   }
 
   switch event.type {
