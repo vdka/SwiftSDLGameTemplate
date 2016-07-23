@@ -25,22 +25,23 @@ public func update(with memory: UnsafeMutablePointer<Byte>!) -> Bool {
     do { try render(gameState, to: window, with: renderer) } catch { print("ERROR: during rendering \(error)") }
   }
 
-  var event = SDL_Event()
-  SDL_PollEvent(&event)
-
   // MARK: - Read KeyboardState
 
-  if keyboard[.down] {
+  if keyboard.contains(.down) {
     gameState.yPos += 1
   }
-  if keyboard[.up] {
+  if keyboard.contains(.up) {
     gameState.yPos -= 1
   }
-  if keyboard[.right] {
+  if keyboard.contains(.right) {
     gameState.xPos += 1
   }
-  if keyboard[.left] {
+  if keyboard.contains(.left) {
     gameState.xPos -= 1
+  }
+
+  if keyboard.contains([.left, .space]) {
+    print("Two keys, one solution.")
   }
 
   if gameState.xPos < 0 {
@@ -55,6 +56,9 @@ public func update(with memory: UnsafeMutablePointer<Byte>!) -> Bool {
   if gameState.yPos > window.size.h {
     gameState.yPos = 0
   }
+
+  var event = SDL_Event()
+  SDL_PollEvent(&event)
 
   switch event.type {
   case SDL_QUIT.rawValue:

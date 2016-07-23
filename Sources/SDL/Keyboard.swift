@@ -19,21 +19,20 @@ public var keyboard: Keyboard {
   return Keyboard()
 }
 
-public struct SimpleKeyboard: OptionSet {
+extension Keyboard {
 
-  public init(rawValue: UInt64) { self.rawValue = rawValue }
-  public let rawValue: UInt64
+  public func contains(_ member: Scancode) -> Bool {
+    return SDL_GetKeyboardState(nil).advanced(by: numericCast(member.rawValue)).pointee > 0
+  }
 
-  public static let
-    a = 0b0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0001 as SimpleKeyboard,
-    b = 0b0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0010 as SimpleKeyboard
-}
+  public func contains(_ members: [Scancode]) -> Bool {
 
-extension SimpleKeyboard: IntegerLiteralConvertible {
-
-  public init(integerLiteral: UInt64) {
-
-    self.rawValue = integerLiteral
+    for member in members {
+      guard SDL_GetKeyboardState(nil).advanced(by: numericCast(member.rawValue)).pointee > 0 else {
+        return false
+      }
+    }
+    return true
   }
 }
 
