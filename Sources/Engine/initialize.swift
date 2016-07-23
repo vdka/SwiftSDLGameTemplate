@@ -21,7 +21,9 @@ public func initialize() -> UnsafeMutablePointer<Byte>? {
 
     let memory = UnsafeMutablePointer<Byte>(allocatingCapacity: totalMemoryRequired)
 
-    write(&window, &renderer, &gameState, to: memory)
+    var ticks = SDL_GetTicks()
+
+    write(&window, &renderer, &gameState, &ticks, to: memory)
 
     return memory
   } catch {

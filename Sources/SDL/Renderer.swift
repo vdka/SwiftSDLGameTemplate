@@ -72,7 +72,7 @@ extension Renderer {
 
   public func present() {
 
-    let result = SDL_RenderPresent(pointer)
+    SDL_RenderPresent(pointer)
   }
 
   public func drawLine(x1: Int32, y1: Int32, x2: Int32, y2: Int32) throws {

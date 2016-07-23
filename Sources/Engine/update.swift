@@ -19,12 +19,28 @@ public func update(with memory: UnsafeMutablePointer<Byte>!) -> Bool {
   var gameState: GameState = memory.object(at: currentOffset)
   currentOffset += sizeofValue(gameState)
 
+  var lastTick: UInt32 = memory.object(at: currentOffset)
+  currentOffset += sizeofValue(gameState)
+
   defer {
     do { try render(gameState, to: window, with: renderer) } catch { print("ERROR: during rendering \(error)") }
   }
 
   var event = SDL_Event()
   SDL_PollEvent(&event)
+
+  if SDL_KEYDOWN.rawValue == event.type && event.key.keysym.sym == numericCast(SDLK_DOWN) {
+    gameState.yPos += 1
+  }
+  if SDL_KEYDOWN.rawValue == event.type && event.key.keysym.sym == numericCast(SDLK_UP) {
+    gameState.yPos -= 1
+  }
+  if SDL_KEYDOWN.rawValue == event.type && event.key.keysym.sym == numericCast(SDLK_RIGHT) {
+    gameState.xPos += 1
+  }
+  if SDL_KEYDOWN.rawValue == event.type && event.key.keysym.sym == numericCast(SDLK_LEFT) {
+    gameState.xPos -= 1
+  }
 
   switch event.type {
   case SDL_QUIT.rawValue:
@@ -37,18 +53,6 @@ public func update(with memory: UnsafeMutablePointer<Byte>!) -> Bool {
 
   case SDL_KEYDOWN.rawValue where event.key.keysym.sym == numericCast(SDLK_SPACE):
     print("Spacing out")
-
-  case SDL_KEYDOWN.rawValue where event.key.keysym.sym == numericCast(SDLK_DOWN):
-    gameState.yPos += 1
-
-  case SDL_KEYDOWN.rawValue where event.key.keysym.sym == numericCast(SDLK_UP):
-    gameState.yPos -= 1
-
-  case SDL_KEYDOWN.rawValue where event.key.keysym.sym == numericCast(SDLK_RIGHT):
-    gameState.xPos += 1
-
-  case SDL_KEYDOWN.rawValue where event.key.keysym.sym == numericCast(SDLK_LEFT):
-    gameState.xPos -= 1
 
   default:
     break
