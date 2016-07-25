@@ -7,6 +7,17 @@ public struct Keyboard {
 
   public init() {}
 
+  public var downKeys: [Scancode] {
+    let keyboardState = SDL_GetKeyboardState(nil)
+    var keys: [Scancode] = []
+    for keyNum in (0..<Scancode.numScancodes.rawValue) {
+      guard let scancode = Scancode(rawValue: keyNum)
+      where keyboardState?.advanced(by: numericCast(keyNum)).pointee > 0 else { continue }
+      keys.append(scancode)
+    }
+    return keys
+  }
+
   public subscript(_ keyCode: Scancode) -> Bool {
 
     return SDL_GetKeyboardState(nil).advanced(by: numericCast(keyCode.rawValue)).pointee > 0

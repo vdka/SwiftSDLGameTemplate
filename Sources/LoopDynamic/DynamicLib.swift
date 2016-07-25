@@ -63,7 +63,7 @@ public final class DynamicLib {
     // only reload if the last write did not occur when the last read did.
     guard lastWriteTime != lastReadTime else { return }
 
-    print("Reloading \(path.characters.split(separator: "/").last.flatMap(String.init))")
+    print("Reloading \(path.characters.split(separator: "/").last.flatMap(String.init)!)")
 
     try unload()
     while lastWriteTime == nil && curTime() - startTime < 1 {

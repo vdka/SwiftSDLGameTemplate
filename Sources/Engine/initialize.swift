@@ -12,7 +12,6 @@ public func initialize() -> UnsafeMutablePointer<Byte>? {
 
     var (window, renderer) = try SDL.createWindowAndRenderer(w: 200, h: 360, windowFlags: [.shown])
 
-    let startScreen = SDL_GetNumVideoDisplays()
     window.setPosition(x: Int32.WindowPosition.centered, y: 0)
 
     var gameState = GameState(score: 450, xPos: 0, yPos: 0)
@@ -21,9 +20,9 @@ public func initialize() -> UnsafeMutablePointer<Byte>? {
 
     let memory = UnsafeMutablePointer<Byte>(allocatingCapacity: totalMemoryRequired)
 
-    var ticks = SDL_GetTicks()
+    var timer = Timer()
 
-    write(&window, &renderer, &gameState, &ticks, to: memory)
+    write(&window, &renderer, &gameState, &timer, to: memory)
 
     return memory
   } catch {

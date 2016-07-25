@@ -18,32 +18,31 @@ public func update(with memory: UnsafeMutablePointer<Byte>!) -> Bool {
   var gameState: GameState = memory.object(at: currentOffset)
   currentOffset += sizeofValue(gameState)
 
-  var lastTick: UInt32 = memory.object(at: currentOffset)
+  var timer: Timer = memory.object(at: currentOffset)
   currentOffset += sizeofValue(gameState)
 
   defer {
-    do { try render(gameState, to: window, with: renderer) } catch { print("ERROR: during rendering \(error)") }
+    do {
+      try render(gameState, to: window, with: renderer)
+
+      print("frame took \(timer.delta)ms")
+      timer.touch()
+
+      print("delaying next frame by \(max(1000 / 60 - timer.delta, 0))")
+
+      SDL_Delay(UInt32(max(1000 / 60 - timer.delta, 0)))
+      timer.touch()
+      write(&window, &renderer, &gameState, &timer, to: memory)
+    } catch { print("ERROR: during rendering \(error)") }
   }
 
-  // MARK: - Read KeyboardState
 
-  if keyboard.contains(.down) {
-    gameState.yPos += 1
-  }
-  if keyboard.contains(.up) {
-    gameState.yPos -= 1
-  }
-  if keyboard.contains(.right) {
-    gameState.xPos += 1
-  }
-  if keyboard.contains(.left) {
-    gameState.xPos -= 1
+  // MARK: - Handle input
+  gameState = keyboard.downKeys.reduce(gameState) { gameState, key in
+    return keyboardHandler[key]?(gameState) ?? gameState
   }
 
-  if keyboard.contains([.left, .space]) {
-    print("Two keys, one solution.")
-  }
-
+  // TODO(vdka): shift this
   if gameState.xPos < 0 {
     gameState.xPos = window.size.w
   }
@@ -65,28 +64,10 @@ public func update(with memory: UnsafeMutablePointer<Byte>!) -> Bool {
     print("quitting")
     return false
 
-  case SDL_KEYDOWN.rawValue where event.key.keysym.sym == numericCast(SDLK_ESCAPE):
-    print("escaping")
-    return false
-
-  case SDL_KEYDOWN.rawValue where event.key.keysym.sym == numericCast(SDLK_SPACE):
-    print("Spacing out")
-
   default:
     break
   }
 
-  // TODO(vdka): proper frame syncronization
-  gameState.score = gameState.score &+ 1
-
-  var newTick = SDL_GetTicks()
-
-  let dTicks = newTick - newTick
-
-  SDL_Delay(UInt32(1000.0 / 60.0 - Double(dTicks)))
-
-  write(&window, &renderer, &gameState, &newTick, to: memory)
-
-  return true
+  return true // continue
 }
 
