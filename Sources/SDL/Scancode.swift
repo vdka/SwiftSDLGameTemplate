@@ -1,4 +1,6 @@
 
+import CSDL2
+
 public enum Scancode: UInt16 {
 
   case
@@ -321,11 +323,11 @@ public enum Scancode: UInt16 {
     sleep = 282,
 
     app1 = 283,
-    app2 = 284,
+    app2 = 284
 
     /* add any other keys here. */
 
-    numScancodes = 512 /**< not a key, just marks the number of scancodes
-                                 for array bounds */
+    public static let numScancodes = 512 /**< not a key, just marks the number of scancodes
+                                              for array bounds */
 }
 

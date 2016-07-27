@@ -1,49 +1,75 @@
 
 import CSDL2
 
-// TODO(vdka): This API is clunky not sure why we can't do static subscripts but that was my initial thought.
-//  Maybe this should be one of those dirty global variables
-public struct Keyboard {
+public typealias KeyboardEvent = SDL_KeyboardEvent
 
-  public init() {}
+extension KeyboardEvent {
 
-  public var downKeys: [Scancode] {
-    let keyboardState = SDL_GetKeyboardState(nil)
-    var keys: [Scancode] = []
-    for keyNum in (0..<Scancode.numScancodes.rawValue) {
-      guard let scancode = Scancode(rawValue: keyNum)
-      where keyboardState?.advanced(by: numericCast(keyNum)).pointee > 0 else { continue }
-      keys.append(scancode)
-    }
-    return keys
+  public enum KeyState {
+    case up, down
   }
 
-  public subscript(_ keyCode: Scancode) -> Bool {
-
-    return SDL_GetKeyboardState(nil).advanced(by: numericCast(keyCode.rawValue)).pointee > 0
+  public var keyState: KeyState {
+    if type == SDL_KEYDOWN.rawValue {
+      return .down
+    } else if type == SDL_KEYUP.rawValue {
+      return .up
+    } else { fatalError("Expected a keyEvent type") }
   }
 }
 
-// EW.
-public var keyboard: Keyboard {
+public enum Keyboard {
 
-  return Keyboard()
-}
-
-extension Keyboard {
-
-  public func contains(_ member: Scancode) -> Bool {
-    return SDL_GetKeyboardState(nil).advanced(by: numericCast(member.rawValue)).pointee > 0
-  }
-
-  public func contains(_ members: [Scancode]) -> Bool {
-
-    for member in members {
-      guard SDL_GetKeyboardState(nil).advanced(by: numericCast(member.rawValue)).pointee > 0 else {
-        return false
+  // TODO(vdka): This needs to be more general and buffer every event type.
+  public static var keyEvents: [KeyboardEvent] {
+    return zip(downEvents, upEvents).flatMap {
+      let (downEvent, upEvent) = $0
+      switch (downEvent, upEvent) {
+      case let (downEvent?, nil): return downEvent
+      case let (nil, upEvent?): return upEvent
+      case (nil, nil): return nil
+      case (.some(_), .some(_)): fatalError("You broke your keyboard. A key is both up and down.")
       }
     }
-    return true
+  }
+
+  public static var upEvents:   [KeyboardEvent?] = Array(repeating: nil, count: Scancode.numScancodes)
+
+  public static var downEvents: [KeyboardEvent?] = Array(repeating: nil, count: Scancode.numScancodes)
+
+  // public static var downKeys: [Bool] = Array(repeating: false, count: Scancode.numScancodes)
+
+  // TODO(vdka): This needs to be more general and buffer every event type.
+  public static func update() -> Bool {
+
+    upEvents.enumerated()
+      .filter { $0.1 != nil }
+      .forEach { upEvents[$0.0] = nil }
+
+    var event = Event()
+
+    while SDL_PollEvent(&event) == 1 {
+
+      guard event.type != SDL_QUIT.rawValue else { return true }
+
+      // filters the non key events
+      guard event.isKeyUp || event.isKeyDown else { continue }
+
+      guard let scancode = Scancode(rawValue: numericCast(event.key.keysym.scancode.rawValue)) else { continue }
+
+      let index: Int = numericCast(scancode.rawValue)
+
+      switch event.key.keyState {
+      case .down:
+        downEvents[index] = event.key
+        upEvents[index]   = nil
+
+      case .up:
+        downEvents[index] = nil
+        upEvents[index]   = event.key
+      }
+    }
+
+    return false
   }
 }
-

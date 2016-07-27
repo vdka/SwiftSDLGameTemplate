@@ -13,4 +13,3 @@ extension Event {
     return type == SDL_KEYUP.rawValue
   }
 }
-

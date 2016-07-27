@@ -4,9 +4,9 @@
 public func write<T>(_ value: inout T, to destinationPointer: UnsafeMutablePointer<Byte>) {
 
   let nBytes = sizeofValue(value)
-  withUnsafePointer(&value) {
+  withUnsafeMutablePointer(&value) {
 
-    let valuePointer = unsafeBitCast($0, to: UnsafePointer<Byte>.self)
+    let valuePointer = unsafeBitCast($0, to: UnsafeMutablePointer<Byte>.self)
     for byteOffset in 0..<nBytes {
       destinationPointer.advanced(by: byteOffset).pointee = valuePointer.advanced(by: byteOffset).pointee
     }

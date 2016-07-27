@@ -1,4 +1,5 @@
 .DS_Store
-/.build
-/Packages
-/*.xcodeproj
+.atom-build.yml
+.build
+Packages
+*.xcodeproj

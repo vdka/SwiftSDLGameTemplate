@@ -4,28 +4,69 @@ import Shared
 
 import func Darwin.C.exit
 
-extension GameState {
-  enum Direction {
-    case up, down, left, right
-  }
-  func move(_ direction: Direction) -> GameState {
-    var gameState = self
-    switch direction {
-    case .up: gameState.yPos -= 1
-    case .down: gameState.yPos += 1
-    case .left: gameState.xPos -= 1
-    case .right: gameState.xPos += 1
-    }
-    return gameState
+public var keyHandler: [((KeyboardEvent, inout GameState) -> Void)?] = Array(repeating: nil, count: Scancode.numScancodes)
+
+typealias Keymap = [Scancode: (KeyboardEvent, inout GameState) -> Void]
+
+/// will load keybindings from file into
+func loadKeybindings(from file: String? = nil) {
+
+  guard file == nil else { return } // TODO(vdka): File based keymaps
+
+  for (scancode, handler) in defaultKeymap {
+    keyHandler[numericCast(scancode.rawValue)] = handler
   }
 }
 
-public let keyboardHandler: [Scancode: (GameState) -> GameState] = [
-  .w: { return $0.move(.up) },
-  .s: { return $0.move(.down) },
-  .a: { return $0.move(.left) },
-  .d: { return $0.move(.right) },
-  .space: { print("Hello"); return $0 },
-  .escape: { exit(0); return $0 }
-]
+let defaultKeymap: [Scancode: (KeyboardEvent, inout GameState) -> Void] = [
+  .w: { lastEvent, gameState in
+    switch lastEvent.keyState {
+    case .down:
+      gameState.player.move(in: .up)
 
+    case .up:
+      gameState.player.acceleration.y = 0
+    }
+  },
+  .s: { lastEvent, gameState in
+    switch lastEvent.keyState {
+    case .down:
+      gameState.player.move(in: .down)
+
+    case .up:
+      gameState.player.acceleration.y = 0
+    }
+  },
+  .a: { lastEvent, gameState in
+    switch lastEvent.keyState {
+    case .down:
+      gameState.player.move(in: .left)
+
+    case .up:
+      gameState.player.acceleration.x = 0
+    }
+  },
+  .d: { lastEvent, gameState in
+    switch lastEvent.keyState {
+    case .down:
+      gameState.player.move(in: .right)
+
+    case.up:
+      gameState.player.acceleration.x = 0
+    }
+  },
+  .c: { lastEvent, gameState in
+    switch lastEvent.keyState {
+    case .down:
+      // TODO(vdka): timeDelta?
+      gameState.player.applyDrag(0.05, timeDelta: 0.01)
+    default: break
+    }
+  },
+  .space: { _, _ in
+    print("Hello")
+  },
+  .escape: { (_, gameState: inout GameState) in
+    gameState.shouldQuit = true
+  }
+]
