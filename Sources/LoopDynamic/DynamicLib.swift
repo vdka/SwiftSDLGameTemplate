@@ -89,7 +89,7 @@ public final class DynamicLib {
 
 extension DynamicLib {
 
-  struct Error: ErrorProtocol {
+  struct Error: Swift.Error {
 
     init(_ reason: Reason) {
       self.reason = reason

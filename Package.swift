@@ -4,8 +4,7 @@ let package = Package(
   name: "SwiftSDLGameTemplate",
   targets: [
     Target(name: "SDL"),
-    Target(name: "Shared"),
-    Target(name: "Engine",   dependencies: [.Target(name: "Shared"), .Target(name: "SDL"),]),
+    Target(name: "Engine",   dependencies: [.Target(name: "SDL"),]),
     Target(name: "LoopStatic", dependencies: [.Target(name: "Engine")]),
     Target(name: "LoopDynamic") // This game loop depends on Engine indirectly through runtime linking
   ],

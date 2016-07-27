@@ -1,6 +1,5 @@
 
 import SDL
-import Shared
 
 import func Darwin.C.exit
 

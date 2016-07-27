@@ -3,7 +3,7 @@ import CSDL2
 
 extension SDL {
 
-  public struct Error: ErrorProtocol {
+  public struct Error: Swift.Error {
     public var message: String
 
     public static var last: Error {

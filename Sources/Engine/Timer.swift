@@ -3,8 +3,8 @@ import CSDL2
 
 public struct Timer {
 
-  var then: UInt64
-  var now: UInt64
+  var then: UInt64 = 0
+  public var now: UInt64 = 1
   var frequency: Double
   public var delta: Double {
     return Double(now - then) / Double(frequency)
@@ -21,4 +21,3 @@ public struct Timer {
     now = SDL_GetPerformanceCounter()
   }
 }
-

@@ -1,5 +1,4 @@
 
-import Shared
 import SDL
 
 extension Rect {

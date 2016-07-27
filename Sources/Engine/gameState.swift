@@ -9,6 +9,8 @@ public struct GameState {
 
   public var player: Player
 
+  public var timer: Timer = Timer()
+
   public init(score: Int) {
 
     self.score = score
@@ -16,4 +18,3 @@ public struct GameState {
     self.player = Player(position: .zero)
   }
 }
-

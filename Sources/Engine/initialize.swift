@@ -1,7 +1,6 @@
 
 import CSDL2
 import SDL
-import Shared
 
 /// Only ever called once when the game is first launched. Use this to set up a state that can be persisted to Raw Memory between reloads of libGameEngine.dylib
 @_silgen_name("load")
@@ -24,7 +23,7 @@ public func initialize() -> UnsafeMutablePointer<Byte>? {
     // NOTE(vdka): If ever running into memory issues this is likely why. Make absolutely sure this is the amount of memory you need.
     let totalMemoryRequired = sizeofValue(graphics) + sizeofValue(gameState) + sizeofValue(timer)
 
-    let memory = UnsafeMutablePointer<Byte>(allocatingCapacity: totalMemoryRequired)
+    let memory = UnsafeMutablePointer<Byte>.allocate(capacity: totalMemoryRequired)
 
     write(&graphics, &gameState, &timer, to: memory)
 

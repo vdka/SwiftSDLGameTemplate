@@ -1,12 +1,11 @@
 
 import CSDL2
 import SDL
-import Shared
 
 public func render(_ gameState: GameState, to window: Window, with renderer: Renderer) throws {
 
-  /// translates game Coordinates into renderer coordinates
   /// TODO(vdka): change signature to `swap(_ vector: V2, from: CoordinateSystem, to: CoordinateSystem)`
+  /// translates game Coordinates into renderer coordinates
   func translate(coordinates input: V2) -> V2 {
     return V2(x: input.x, y: -input.y + Double(window.size.h))
   }
