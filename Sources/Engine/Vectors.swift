@@ -62,10 +62,10 @@ public struct Vector2 {
 
 extension Vector2 {
 
-  public static let up     = V2(x: 0,  y:  1)
-  public static let down   = V2(x: 0,  y: -1)
+  public static let up     = V2(x:  0, y:  1)
+  public static let down   = V2(x:  0, y: -1)
   public static let left   = V2(x: -1, y:  0)
-  public static let right  = V2(x: 1,  y:  0)
+  public static let right  = V2(x:  1, y:  0)
 }
 
 public typealias V3 = Vector3

@@ -17,7 +17,7 @@ public func render(_ gameState: GameState, to window: Window, with renderer: Ren
 
   try renderer.drawLine(x1: 0, y1: 0, x2: window.size.w, y2: window.size.h)
 
-  try renderer.setDrawColor(r: 0x00, g: 0xcc, b: 0xff, a: 0xff)
+  try renderer.setDrawColor(r: 0xff, g: 0xcc, b: 0xff, a: 0xff)
 
   var rect = Rect(origin: translate(coordinates: gameState.player.position), size: V2(Double(gameState.player.width), Double(gameState.player.width)))
 

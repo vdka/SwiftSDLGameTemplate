@@ -6,7 +6,6 @@ var shouldQuit = false
 typealias Byte = UInt8
 
 var memory = Engine.initialize()
-Engine.reinitialize()
 
 guard memory != nil else { fatalError("Call to initialize function failed") }
 

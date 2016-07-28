@@ -42,7 +42,7 @@ public final class DynamicLib {
         throw Error(.libNotFound)
       }
       throw Error(.incompatibleBinary) }
-    handle = dlopen(path, RTLD_LAZY | RTLD_GLOBAL)
+    handle = dlopen(path, RTLD_LAZY)
 
     guard handle != nil else { throw Error(.failedToLoadLibrary) }
 
@@ -56,12 +56,16 @@ public final class DynamicLib {
     self.handle = nil
   }
 
+  public var shouldReload: Bool {
+    return lastWriteTime != lastReadTime
+  }
+
   public func reload() throws {
 
     let startTime = curTime()
 
     // only reload if the last write did not occur when the last read did.
-    guard lastWriteTime != lastReadTime else { return }
+    guard shouldReload else { return }
 
     print("Reloading \(path.characters.split(separator: "/").last.flatMap(String.init)!)")
 
@@ -74,7 +78,14 @@ public final class DynamicLib {
     print("Reload successful!")
   }
 
-  public func getSymbol(_ name: String) -> UnsafeMutablePointer<()>? {
+  public func unsafeSymbol<T>(named name: String, withSignature: T.Type) -> T? {
+
+    guard let symbol = symbol(named: name) else { return nil }
+
+    return unsafeBitCast(symbol, to: T.self)
+  }
+
+  public func symbol(named name: String) -> UnsafeMutablePointer<()>? {
     guard handle != nil else { return nil }
 
     let symbol = dlsym(handle, name)
@@ -89,7 +100,7 @@ public final class DynamicLib {
 
 extension DynamicLib {
 
-  struct Error: Swift.Error {
+  struct Error: Swift.ErrorProtocol {
 
     init(_ reason: Reason) {
       self.reason = reason

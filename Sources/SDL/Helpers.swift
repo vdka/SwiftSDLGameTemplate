@@ -13,7 +13,7 @@ extension SDL {
   }
 }
 
-public protocol SDLOptionSet: OptionSet, ExpressibleByIntegerLiteral{
+public protocol SDLOptionSet: OptionSet, IntegerLiteralConvertible {
 
   var rawValue: UInt32 { get }
 
@@ -28,7 +28,7 @@ extension SDLOptionSet {
   }
 }
 
-public protocol Passthrough: ExpressibleByNilLiteral {
+public protocol Passthrough: NilLiteralConvertible {
 
   init()
   var pointer: OpaquePointer? { get set }

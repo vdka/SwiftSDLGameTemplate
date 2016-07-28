@@ -13,6 +13,17 @@ public func write<T>(_ value: inout T, to destinationPointer: UnsafeMutablePoint
   }
 }
 
+public func write<A, B>(_ a: inout A, _ b: inout B, to desintationPointer: UnsafeMutablePointer<Byte>) {
+
+  var currentOffset = 0
+
+  write(&a, to: desintationPointer.advanced(by: currentOffset))
+  currentOffset += sizeofValue(a)
+
+  write(&b, to: desintationPointer.advanced(by: currentOffset))
+  currentOffset += sizeofValue(b)
+}
+
 public func write<A, B, C>(_ a: inout A, _ b: inout B, _ c: inout C, to desintationPointer: UnsafeMutablePointer<Byte>) {
 
   var currentOffset = 0
@@ -60,4 +71,3 @@ extension UnsafeMutablePointer {
     }
   }
 }
-

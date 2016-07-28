@@ -9,24 +9,27 @@ typealias Byte = UInt8
 // If return nil there was an error during initialization
 typealias LoadFunction   = @convention(c) () -> UnsafeMutablePointer<Byte>?
 typealias OnLoadFunction = @convention(c) () -> Void
-typealias LoopFunction   = @convention(c) (UnsafeMutablePointer<Byte>?) -> Bool
+typealias UpdateFunction   = @convention(c) (UnsafeMutablePointer<Byte>?) -> Bool
 
-guard let initialize = gameEngine.getSymbol("load") else { fatalError("Failure to launch! No 'initialize' symbol found!") }
+let initialize = gameEngine.unsafeSymbol(named: "load", withSignature: LoadFunction.self)
 
-var memory = unsafeBitCast(initialize, to: LoadFunction.self)()
+var memory = initialize?()
 
 guard memory != nil else { fatalError("Call to initialize function failed") }
 
 while (!shouldQuit) {
 
-  try gameEngine.reload()
-  if let onLoad = gameEngine.getSymbol("onLoad") {
-    unsafeBitCast(onLoad, to: OnLoadFunction.self)()
+  if gameEngine.shouldReload {
+
+    try gameEngine.reload()
+    gameEngine.unsafeSymbol(named: "onLoad", withSignature: OnLoadFunction.self)?()
   }
 
-  guard let loop = gameEngine.getSymbol("update") else { print("loop function missing"); continue }
+  guard let loop = gameEngine.symbol(named: "update") else { print("loop function missing"); continue }
 
-  shouldQuit = unsafeBitCast(loop, to: LoopFunction.self)(memory)
+  shouldQuit = unsafeBitCast(loop, to: UpdateFunction.self)(memory)
+
+  // shouldQuit = gameEngine.unsafeSymbol(named: "update", withSignature: UpdateFunction.self)?(memory) ?? false
 }
 
 print("Did quit cleanly!")

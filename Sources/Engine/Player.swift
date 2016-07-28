@@ -1,6 +1,6 @@
 
 public struct Player {
-  public static let moveSpeed: Double = 12.0
+  public static let moveSpeed: Double = 100.0
   public var width: Int = 20
   public var hight: Int = 20
   public var position: Vector2
@@ -16,7 +16,7 @@ public struct Player {
   public mutating func move(in direction: V2) {
 
     // negate y as the window
-    acceleration += direction.normalized() * Player.moveSpeed
+    acceleration = direction.normalized() * Player.moveSpeed
 
     if acceleration.length > 100 {
       // TODO(vdka): optimize

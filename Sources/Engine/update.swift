@@ -16,7 +16,7 @@ public func update(with memory: UnsafeMutablePointer<Byte>!) -> Bool {
 
   update(&gameState, using: &graphics)
 
-  write(&graphics, &gameState, &gameState.timer, to: memory)
+  write(&graphics, &gameState, to: memory)
 
   return gameState.shouldQuit
 }
@@ -28,17 +28,23 @@ public func update(_ gameState: inout GameState, using graphics: inout Graphics)
       try render(gameState, to: graphics.window, with: graphics.renderer)
 
       // TODO(vdka): FPS counting
-//      print("frame took \(gameState.timer.delta)ms")
+      // print("frame took \(gameState.timer.delta)ms")
       gameState.timer.touch()
 
       var frameCounter = graphics.frameCounter
       let framesPerSecond = graphics.frameCounter.update()
       if let framesPerSecond = framesPerSecond {
-        print("fps: \(framesPerSecond)")
+        print("\(framesPerSecond) fps kasjdf")
       }
+
       // print("delaying next frame by \(max(1000 / 60 - timer.delta, 0))")
 
-      // SDL_Delay(UInt32(max(1000 / 60 - timer.delta, 0)))
+      // TODO(vdka): This delay should lock to 60 fps. it's instead hitting 53? Could be an error in the FPS counter
+      // SDL_Delay(UInt32(max(1000 / 60 - gameState.timer.delta, 0)))
+
+      #if DEBUG
+        _ = Darwin.fflush(Darwin.stdout) // flush stdout ignore failure
+      #endif
     } catch { print("ERROR: during rendering \(error)") }
   }
 
@@ -67,4 +73,7 @@ public func update(_ gameState: inout GameState, using graphics: inout Graphics)
   if gameState.player.position.y > Double(graphics.window.size.h) {
     gameState.player.position.y = 0
   }
+
+  // print("velocity \(gameState.player.velocity)")
+  // print("acceleration \(gameState.player.acceleration)")
 }

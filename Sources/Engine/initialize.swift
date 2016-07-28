@@ -6,6 +6,8 @@ import SDL
 @_silgen_name("load")
 public func initialize() -> UnsafeMutablePointer<Byte>? {
 
+  defer { onLoad() }
+
   do {
 
     try SDL.initialize(components: .video)
@@ -18,14 +20,12 @@ public func initialize() -> UnsafeMutablePointer<Byte>? {
 
     var gameState = GameState(score: 450)
 
-    var timer = Timer()
-
     // NOTE(vdka): If ever running into memory issues this is likely why. Make absolutely sure this is the amount of memory you need.
-    let totalMemoryRequired = sizeofValue(graphics) + sizeofValue(gameState) + sizeofValue(timer)
+    let totalMemoryRequired = sizeofValue(graphics) + sizeofValue(gameState)
 
-    let memory = UnsafeMutablePointer<Byte>.allocate(capacity: totalMemoryRequired)
+    let memory = UnsafeMutablePointer<Byte>(allocatingCapacity: totalMemoryRequired)
 
-    write(&graphics, &gameState, &timer, to: memory)
+    write(&graphics, &gameState, to: memory)
 
     return memory
   } catch {
@@ -37,9 +37,10 @@ public func initialize() -> UnsafeMutablePointer<Byte>? {
 
 /// Called every time the libGameEngine.dylib is reloaded. Use this to reload anything in the Engine that loaded after first load
 @_silgen_name("onLoad")
-public func reinitialize() {
+public func onLoad() {
 
+  print("Reloading keybindings")
   loadKeybindings()
 }
 
-// TODO(vdka): Dynamic reinitalize. Basically reinit any static var's eg keymaps.
+// TODO(vdka): Dynamic reLoad. Basically reLoad any first launch setup things eg keymaps.
