@@ -61,13 +61,4 @@ extension UnsafeMutablePointer {
 
     return UnsafePointer<T>(self.advanced(by: offset)).pointee
   }
-
-  // TODO(vdka): no modification occurs, therefore would be nice to drop inout.
-  public func object<T, U>(following other: inout U) -> T {
-
-    let sizeOfOther = sizeofValue(other)
-    return withUnsafeMutablePointer(&other) {
-      UnsafePointer<T>($0.advanced(by: sizeOfOther)).pointee
-    }
-  }
 }

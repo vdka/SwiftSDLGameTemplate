@@ -1,25 +1,6 @@
 
 import CSDL2
 
-public struct Texture {
-  var pointer: OpaquePointer?
-}
-
-extension Texture {
-
-  public enum TextureAccess: UInt32 {
-    case `static` = 0
-    case streaming
-    case target
-  }
-
-  public enum TextureModulate: UInt32 {
-    case none = 0
-    case color
-    case alpha
-  }
-}
-
 public struct Renderer: Passthrough {
   public init() { self.pointer = nil }
   public var pointer: OpaquePointer?
@@ -57,6 +38,15 @@ extension Renderer {
 // MARK: - Drawing
 
 extension Renderer {
+
+  public func setDrawColor(rgb: UInt32, a: UInt8 = 0xff) throws {
+
+    let r = UInt8((rgb & 0xff0000) >> 16)
+    let g = UInt8((rgb & 0x00ff00) >>  8)
+    let b = UInt8((rgb & 0x0000ff) >>  0)
+
+    try setDrawColor(r: r, g: g, b: b, a: a)
+  }
 
   public func setDrawColor(r: UInt8, g: UInt8, b: UInt8, a: UInt8 = 0xff) throws {
 
@@ -97,4 +87,3 @@ extension Renderer {
     guard result == 0 else { throw SDL.Error.last }
   }
 }
-

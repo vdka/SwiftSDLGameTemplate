@@ -8,8 +8,8 @@ typealias Byte = UInt8
 
 // If return nil there was an error during initialization
 typealias LoadFunction   = @convention(c) () -> UnsafeMutablePointer<Byte>?
-typealias OnLoadFunction = @convention(c) () -> Void
-typealias UpdateFunction   = @convention(c) (UnsafeMutablePointer<Byte>?) -> Bool
+typealias OnLoadFunction = @convention(c) (UnsafeMutablePointer<Byte>?) -> Void
+typealias UpdateFunction = @convention(c) (UnsafeMutablePointer<Byte>?) -> Bool
 
 let initialize = gameEngine.unsafeSymbol(named: "load", withSignature: LoadFunction.self)
 
@@ -22,14 +22,18 @@ while (!shouldQuit) {
   if gameEngine.shouldReload {
 
     try gameEngine.reload()
-    gameEngine.unsafeSymbol(named: "onLoad", withSignature: OnLoadFunction.self)?()
+
+    let onLoad = gameEngine.unsafeSymbol(named: "onLoad", withSignature: OnLoadFunction.self)
+
+    onLoad?(memory)
   }
 
-  guard let loop = gameEngine.symbol(named: "update") else { print("loop function missing"); continue }
+  guard let loop = gameEngine.symbol(named: "update") else {
+    print("update function missing")
+    continue
+  }
 
   shouldQuit = unsafeBitCast(loop, to: UpdateFunction.self)(memory)
-
-  // shouldQuit = gameEngine.unsafeSymbol(named: "update", withSignature: UpdateFunction.self)?(memory) ?? false
 }
 
 print("Did quit cleanly!")

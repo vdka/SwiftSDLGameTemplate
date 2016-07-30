@@ -1,6 +1,6 @@
 
 public struct Player {
-  public static let moveSpeed: Double = 100.0
+  public static let moveSpeed: Double = 1.0
   public var width: Int = 20
   public var hight: Int = 20
   public var position: Vector2
@@ -16,8 +16,9 @@ public struct Player {
   public mutating func move(in direction: V2) {
 
     // negate y as the window
-    acceleration = direction.normalized() * Player.moveSpeed
+    acceleration += direction.normalized() * Player.moveSpeed
 
+    // Cap acceleration to 100 units/s
     if acceleration.length > 100 {
       // TODO(vdka): optimize
       acceleration = acceleration.normalized() * 100
@@ -33,11 +34,12 @@ public struct Player {
   }
 
   public mutating func applyDrag(_ amount: Double, timeDelta: Double) {
-    let drag = -(velocity) * amount
-    velocity += drag
-
-    if velocity.length < 1 {
+    guard velocity.length > 1 else {
       velocity = .zero
+      return
     }
+    let drag = -(velocity) * amount
+    assert(drag.length < velocity.length, "We applied so much drag we went backwards.")
+    velocity += drag
   }
 }

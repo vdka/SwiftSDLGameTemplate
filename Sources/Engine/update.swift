@@ -2,50 +2,41 @@
 import SDL
 import CSDL2
 
-// returns the intent to continue
+// returns shouldQuit
 @_silgen_name("update")
 public func update(with memory: UnsafeMutablePointer<Byte>!) -> Bool {
 
-  var currentOffset = 0
-
-  var graphics: Graphics = memory.object(at: currentOffset)
-  currentOffset += sizeofValue(graphics)
-
-  var gameState: GameState = memory.object(at: currentOffset)
-  currentOffset += sizeofValue(gameState)
-
-  update(&gameState, using: &graphics)
-
-  write(&graphics, &gameState, to: memory)
-
-  return gameState.shouldQuit
+  return call(with: memory, update)
 }
 
-public func update(_ gameState: inout GameState, using graphics: inout Graphics) {
+// returns shouldQuit
+func update(_ gameState: inout GameState, using graphics: inout Graphics) -> Bool {
 
   defer {
     do {
-      try render(gameState, to: graphics.window, with: graphics.renderer)
+      try render(gameState, to: graphics)
 
-      // TODO(vdka): FPS counting
-      // print("frame took \(gameState.timer.delta)ms")
+      // print("timer.delta \(gameState.timer.delta)")
       gameState.timer.touch()
 
       var frameCounter = graphics.frameCounter
       let framesPerSecond = graphics.frameCounter.update()
       if let framesPerSecond = framesPerSecond {
-        print("\(framesPerSecond) fps kasjdf")
+        log.info("\(framesPerSecond) fps")
       }
 
       // print("delaying next frame by \(max(1000 / 60 - timer.delta, 0))")
 
       // TODO(vdka): This delay should lock to 60 fps. it's instead hitting 53? Could be an error in the FPS counter
-      // SDL_Delay(UInt32(max(1000 / 60 - gameState.timer.delta, 0)))
+      // NOTE(vdka): Perhaps SDL can handle this for us also. If so we should check.
+      if graphics.config.vsync {
+        SDL_Delay(UInt32(max(1000 / graphics.config.fpsTarget - gameState.timer.delta, 0)))
+      }
 
       #if DEBUG
         _ = Darwin.fflush(Darwin.stdout) // flush stdout ignore failure
       #endif
-    } catch { print("ERROR: during rendering \(error)") }
+    } catch { log.error("during rendering \(error)") }
   }
 
   // MARK: - Handle input
@@ -58,7 +49,7 @@ public func update(_ gameState: inout GameState, using graphics: inout Graphics)
 
   gameState.player.updatePosition(timeDelta: gameState.timer.delta)
   gameState.player.updateVelocity(timeDelta: gameState.timer.delta)
-  gameState.player.applyDrag(0.001, timeDelta: gameState.timer.delta)
+  // gameState.player.applyDrag(0.0001, timeDelta: gameState.timer.delta)
 
   // TODO(vdka): shift this
   if gameState.player.position.x < 0 {
@@ -74,6 +65,5 @@ public func update(_ gameState: inout GameState, using graphics: inout Graphics)
     gameState.player.position.y = 0
   }
 
-  // print("velocity \(gameState.player.velocity)")
-  // print("acceleration \(gameState.player.acceleration)")
+  return gameState.shouldQuit
 }

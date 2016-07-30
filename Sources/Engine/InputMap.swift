@@ -7,7 +7,7 @@ public var keyHandler: [((KeyboardEvent, inout GameState) -> Void)?] = Array(rep
 
 typealias Keymap = [Scancode: (KeyboardEvent, inout GameState) -> Void]
 
-/// will load keybindings from file into
+/// will load keybindings from file into memory
 func loadKeybindings(from file: String? = nil) {
 
   guard file == nil else { return } // TODO(vdka): File based keymaps
@@ -17,53 +17,52 @@ func loadKeybindings(from file: String? = nil) {
   }
 }
 
+func movePlayer(_ direction: V2) -> (KeyboardEvent, inout GameState) -> Void {
+
+  return { keyEvent, gameState in
+
+    switch keyEvent.keyState {
+    case .down:
+      return gameState.player.move(in: direction)
+
+    case .up: // FIXME(vdka): Messy logic
+      switch abs(direction.y) < abs(direction.x) {
+      case true:
+        gameState.player.acceleration.x = 0
+      case false:
+        gameState.player.acceleration.y = 0
+      }
+    }
+  }
+}
+
 let defaultKeymap: [Scancode: (KeyboardEvent, inout GameState) -> Void] = [
-  .w: { lastEvent, gameState in
-    switch lastEvent.keyState {
-    case .down:
-      gameState.player.move(in: .up)
-
-    case .up:
-      gameState.player.acceleration.y = 0
-    }
-  },
-  .s: { lastEvent, gameState in
-    switch lastEvent.keyState {
-    case .down:
-      gameState.player.move(in: .down)
-
-    case .up:
-      gameState.player.acceleration.y = 0
-    }
-  },
-  .a: { lastEvent, gameState in
-    switch lastEvent.keyState {
-    case .down:
-      gameState.player.move(in: .left)
-
-    case .up:
-      gameState.player.acceleration.x = 0
-    }
-  },
-  .d: { lastEvent, gameState in
-    switch lastEvent.keyState {
-    case .down:
-      gameState.player.move(in: .right)
-
-    case.up:
-      gameState.player.acceleration.x = 0
-    }
-  },
+  .w: movePlayer(.up),
+  .s: movePlayer(.down),
+  .a: movePlayer(.left),
+  .d: movePlayer(.right),
   .c: { lastEvent, gameState in
     switch lastEvent.keyState {
     case .down:
-      // TODO(vdka): timeDelta?
-      gameState.player.applyDrag(0.05, timeDelta: 0.01)
-    default: break
+      // avoid the creation of huge numbers
+      guard gameState.player.velocity.length != 0 else {
+        return
+      }
+      let drag = (1 / gameState.player.velocity.length) + 0.025
+      gameState.player.applyDrag(drag, timeDelta: gameState.timer.delta)
+
+    case .up:
+      break
     }
   },
+  .h: { keyEvent, gameState in
+
+    guard case .up = keyEvent.keyState else { return }
+    log.info("velocity \(gameState.player.velocity)")
+    log.info("acceleration \(gameState.player.acceleration)")
+  },
   .space: { _, _ in
-    print("Hello")
+    print("Spacing")
   },
   .escape: { (_, gameState: inout GameState) in
     gameState.shouldQuit = true

@@ -119,6 +119,11 @@ extension Window {
     SDL_SetWindowPosition(pointer, x, y)
   }
 
+  public var rect: Rect {
+    let (w, h) = size
+    return Rect(x: 0, y: 0, w: w, h: h)
+  }
+
   public var size: (w: Int32, h: Int32) {
 
     var (w, h): (Int32, Int32) = (0, 0)
@@ -141,4 +146,3 @@ extension Int32 {
     public static let centered: Int32 = SDL_WINDOWPOS_CENTERED_MASK
   }
 }
-

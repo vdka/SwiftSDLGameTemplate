@@ -2,13 +2,16 @@
 import SDL
 import CSDL2
 
-public struct Graphics {
+struct Graphics {
 
-  public var window: Window
-  public var renderer: Renderer
-  public var frameCounter = FrameCounter()
+  var window: Window
+  var renderer: Renderer
 
-  public init(window: Window, renderer: Renderer) {
+  var frameCounter = FrameCounter()
+
+  var config = Config()
+
+  init(window: Window, renderer: Renderer) {
     self.window = window
     self.renderer = renderer
   }
@@ -16,14 +19,23 @@ public struct Graphics {
 
 extension Graphics {
 
-  public struct FrameCounter {
+  struct Config {
 
-    public var frames: UInt32 = SDL_GetTicks()
-    public var lastUpdateTick: UInt32 = 0
+    var vsync: Bool = true
+    var fpsTarget: Double = 60
+  }
+}
+
+extension Graphics {
+
+  struct FrameCounter {
+
+    var frames: UInt32 = SDL_GetTicks()
+    var lastUpdateTick: UInt32 = 0
     /// update period in ms
-    public var updateFrequency: UInt32 = 1000
+    var updateFrequency: UInt32 = 1000
 
-    public mutating func update() -> UInt32? {
+    mutating func update() -> Double? {
 
       let currentTick = SDL_GetTicks()
       guard currentTick > updateFrequency else { return nil }
@@ -39,7 +51,7 @@ extension Graphics {
         lastUpdateTick = currentTick
         frames = 0
       }
-      return ((1000 / updateFrequency) * frames)
+      return Double((1000 / Double(updateFrequency)) * Double(frames))
     }
   }
 }
