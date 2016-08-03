@@ -20,19 +20,8 @@ func loadKeybindings(from file: String? = nil) {
 func movePlayer(_ direction: V2) -> (KeyboardEvent, inout GameState) -> Void {
 
   return { keyEvent, gameState in
-
-    switch keyEvent.keyState {
-    case .down:
-      return gameState.player.move(in: direction)
-
-    case .up: // FIXME(vdka): Messy logic
-      switch abs(direction.y) < abs(direction.x) {
-      case true:
-        gameState.player.acceleration.x = 0
-      case false:
-        gameState.player.acceleration.y = 0
-      }
-    }
+    guard case .down = keyEvent.keyState else { return }
+    return gameState.player.move(in: direction)
   }
 }
 
@@ -41,27 +30,10 @@ let defaultKeymap: [Scancode: (KeyboardEvent, inout GameState) -> Void] = [
   .s: movePlayer(.down),
   .a: movePlayer(.left),
   .d: movePlayer(.right),
-  .c: { lastEvent, gameState in
-    switch lastEvent.keyState {
-    case .down:
-      // avoid the creation of huge numbers
-      guard gameState.player.velocity.length != 0 else {
-        return
-      }
-      let drag = (1 / gameState.player.velocity.length) + 0.025
-      gameState.player.applyDrag(drag, timeDelta: gameState.timer.delta)
-
-    case .up:
-      break
-    }
+  .h: { (_, gameState: inout GameState) in
+    print(gameState.player)
   },
-  .h: { keyEvent, gameState in
-
-    guard case .up = keyEvent.keyState else { return }
-    log.info("velocity \(gameState.player.velocity)")
-    log.info("acceleration \(gameState.player.acceleration)")
-  },
-  .space: { _, _ in
+  .space: { _ in
     print("Spacing")
   },
   .escape: { (_, gameState: inout GameState) in

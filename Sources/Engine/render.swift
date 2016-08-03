@@ -14,14 +14,22 @@ func render(_ gameState: GameState, to graphics: Graphics) throws {
     return V2(x: round(input.x), y: round(-input.y + Double(window.size.h)))
   }
 
-  try renderer.setDrawColor(r: 0x22, g: 0x22, b: 0x22, a: 0x22)
+  try renderer.setDrawColor(rgb: 0x222222)
   try renderer.clear()
 
-  try renderer.setDrawColor(r: 0xff, g: 0xff, b: 0xff, a: 0xff)
+  try renderer.setDrawColor(rgb: 0xffffff)
 
   try renderer.drawLine(x1: 0, y1: 0, x2: window.size.w, y2: window.size.h)
 
-  try renderer.setDrawColor(rgb: 0x009a49, a: 0)
+
+  switch gameState.player.state {
+  case .idle:
+    try renderer.setDrawColor(rgb: 0x009a49)
+  case .standing:
+    try renderer.setDrawColor(rgb: 0x10aa49)
+  case .moving(_):
+    try renderer.setDrawColor(rgb: 0xaa1010)
+  }
 
   var rect = Rect(center: translateToRenderer(coordinates: gameState.player.position), size: V2(Double(gameState.player.width), Double(gameState.player.width)))
 

@@ -1,45 +1,54 @@
 
 public struct Player {
-  public static let moveSpeed: Double = 1.0
+  public static let moveSpeed: Double = 100.0
+  public static let width: Double = 20.0
   public var width: Int = 20
   public var hight: Int = 20
   public var position: Vector2
-  public var velocity: Vector2 = .zero
-  public var acceleration: Vector2 = .zero
 
-  public init(position: Vector2, velocity: Vector2 = .zero, acceleration: Vector2 = .zero) {
+  public var state: State = .idle
+
+  public init(position: Vector2) {
     self.position = position
-    self.velocity = velocity
-    self.acceleration = acceleration
+  }
+
+  public enum State {
+    case idle
+    case standing
+    case moving(to: V2)
   }
 
   public mutating func move(in direction: V2) {
+    // TODO(vdka): check we can move in that direction.
+    switch state {
+    case .idle, .standing:
+      state = .moving(to: position + direction.normalized() * Player.width)
 
-    // negate y as the window
-    acceleration += direction.normalized() * Player.moveSpeed
-
-    // Cap acceleration to 100 units/s
-    if acceleration.length > 100 {
-      // TODO(vdka): optimize
-      acceleration = acceleration.normalized() * 100
+    default:
+      return
     }
-  }
-
-  public mutating func updateVelocity(timeDelta: Double) {
-    velocity += acceleration * timeDelta
   }
 
   public mutating func updatePosition(timeDelta: Double) {
-    position += velocity * timeDelta
-  }
+    guard case .moving(to: let destination) = state else { return }
 
-  public mutating func applyDrag(_ amount: Double, timeDelta: Double) {
-    guard velocity.length > 1 else {
-      velocity = .zero
+    guard destination != position else {
+      state = .standing
       return
     }
-    let drag = -(velocity) * amount
-    assert(drag.length < velocity.length, "We applied so much drag we went backwards.")
-    velocity += drag
+
+    let distanceToTravel = Player.moveSpeed * timeDelta
+
+    print("\((destination - position).length) <= \(distanceToTravel)")
+
+    // ensure the distance we will travel is less than or equal to the distance to our destination.
+    guard (destination - position).length >= distanceToTravel else {
+      print("arrived")
+      position = destination
+      return
+    }
+
+    print("still travelling")
+    position += (destination - position).normalized() * distanceToTravel
   }
 }

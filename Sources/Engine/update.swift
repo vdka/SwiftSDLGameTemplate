@@ -48,8 +48,6 @@ func update(_ gameState: inout GameState, using graphics: inout Graphics) -> Boo
   }
 
   gameState.player.updatePosition(timeDelta: gameState.timer.delta)
-  gameState.player.updateVelocity(timeDelta: gameState.timer.delta)
-  // gameState.player.applyDrag(0.0001, timeDelta: gameState.timer.delta)
 
   // TODO(vdka): shift this
   if gameState.player.position.x < 0 {
