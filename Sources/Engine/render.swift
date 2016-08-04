@@ -4,7 +4,14 @@ import SDL
 
 import func Darwin.round
 
-func render(_ gameState: GameState, to graphics: Graphics) throws {
+extension V2 {
+
+  func translate(for window: Window) -> V2 {
+    return V2(x: round(x), y: round(-y + Double(window.size.h)))
+  }
+}
+
+func render(_ gameState: GameState, to graphics: Graphics, with assetData: AssetData) throws {
 
   let (window, renderer) = (graphics.window, graphics.renderer)
 
@@ -21,19 +28,23 @@ func render(_ gameState: GameState, to graphics: Graphics) throws {
 
   try renderer.drawLine(x1: 0, y1: 0, x2: window.size.w, y2: window.size.h)
 
+  let spriteRect = Rect(center: .zero, size: V2(128, 128))
+  let playerRect = Rect(center: gameState.player.position.translate(for: window), size: V2(Player.width, Player.width))
 
-  switch gameState.player.state {
-  case .idle:
-    try renderer.setDrawColor(rgb: 0x009a49)
-  case .standing:
-    try renderer.setDrawColor(rgb: 0x10aa49)
-  case .moving(_):
-    try renderer.setDrawColor(rgb: 0xaa1010)
-  }
+  try renderer.copy(texture: assetData, sourceRect: spriteRect, destRect: playerRect)
 
-  var rect = Rect(center: translateToRenderer(coordinates: gameState.player.position), size: V2(Double(gameState.player.width), Double(gameState.player.width)))
+  // switch gameState.player.state {
+  // case .idle:
+  //   try renderer.setDrawColor(rgb: 0x009a49)
+  // case .standing:
+  //   try renderer.setDrawColor(rgb: 0x10aa49)
+  // case .moving(_):
+  //   try renderer.setDrawColor(rgb: 0xaa1010)
+  // }
 
-  try renderer.fill(rect: &rect)
+  // var rect = Rect(center: translateToRenderer(coordinates: gameState.player.position), size: V2(Double(gameState.player.width), Double(gameState.player.width)))
+
+  // try renderer.fill(rect: &rect)
 
   renderer.present()
 }

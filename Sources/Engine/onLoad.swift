@@ -10,8 +10,9 @@ public func onLoad(_ memory: UnsafeMutablePointer<Byte>!) -> Void {
   // Perform anything you want to inject into the gameState
   call(with: memory, runInjections)
 
-  call(with: memory) { gameState, graphics in
-    print(graphics.config)
+  //
+  call(with: memory) { _, graphics, _ in
+    print("graphics.config \(graphics.config)")
   }
 }
 
@@ -21,6 +22,6 @@ func loadConfiguration() {
   loadKeybindings()
 }
 
-func runInjections(_ gameState: inout GameState, using graphics: inout Graphics) {
+func runInjections(_ gameState: inout GameState, _ graphics: inout Graphics, _ assetData: AssetData) {
   print("injecting")
 }

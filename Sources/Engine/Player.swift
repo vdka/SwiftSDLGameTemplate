@@ -1,7 +1,7 @@
 
 public struct Player {
   public static let moveSpeed: Double = 100.0
-  public static let width: Double = 20.0
+  public static let width: Double = 32.0
   public var width: Int = 20
   public var hight: Int = 20
   public var position: Vector2

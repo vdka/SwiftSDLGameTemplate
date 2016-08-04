@@ -10,11 +10,11 @@ public func update(with memory: UnsafeMutablePointer<Byte>!) -> Bool {
 }
 
 // returns shouldQuit
-func update(_ gameState: inout GameState, using graphics: inout Graphics) -> Bool {
+func update(_ gameState: inout GameState, using graphics: inout Graphics, assetData: AssetData) -> Bool {
 
   defer {
     do {
-      try render(gameState, to: graphics)
+      try render(gameState, to: graphics, with: assetData)
 
       // print("timer.delta \(gameState.timer.delta)")
       gameState.timer.touch()
