@@ -25,13 +25,13 @@ func update(_ gameState: inout GameState, using graphics: inout Graphics, assetD
         log.info("\(framesPerSecond) fps")
       }
 
-      // print("delaying next frame by \(max(1000 / 60 - timer.delta, 0))")
+      // log.info("delaying next frame by \(UInt32(max(1000 / graphics.config.fpsTarget - gameState.timer.delta, 0)))")
 
       // TODO(vdka): This delay should lock to 60 fps. it's instead hitting 53? Could be an error in the FPS counter
       // NOTE(vdka): Perhaps SDL can handle this for us also. If so we should check.
-      if graphics.config.vsync {
-        SDL_Delay(UInt32(max(1000 / graphics.config.fpsTarget - gameState.timer.delta, 0)))
-      }
+      // if graphics.config.vsync {
+      //   SDL_Delay(UInt32(max(1000 / graphics.config.fpsTarget - gameState.timer.delta, 0)))
+      // }
 
       #if DEBUG
         _ = Darwin.fflush(Darwin.stdout) // flush stdout ignore failure

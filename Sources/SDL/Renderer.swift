@@ -22,7 +22,7 @@ public struct Renderer: Passthrough {
 
 extension Renderer {
 
-  public static func create(forWindow window: Window, indexOfDriver: Int32 = -1, flags: Flag = .accelerated) -> Renderer {
+  public static func create(for window: Window, indexOfDriver: Int32 = -1, flags: Flag = .accelerated) -> Renderer {
 
     let renderer = SDL_CreateRenderer(window.pointer, indexOfDriver, flags.rawValue)
 

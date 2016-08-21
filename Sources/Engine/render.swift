@@ -14,6 +14,7 @@ extension V2 {
 func render(_ gameState: GameState, to graphics: Graphics, with assetData: AssetData) throws {
 
   let (window, renderer) = (graphics.window, graphics.renderer)
+  let characterSpriteSheet = assetData
 
   /// TODO(vdka): change signature to `swap(_ vector: V2, from: CoordinateSystem, to: CoordinateSystem)`
   /// translates game Coordinates into renderer coordinates
@@ -28,23 +29,34 @@ func render(_ gameState: GameState, to graphics: Graphics, with assetData: Asset
 
   try renderer.drawLine(x1: 0, y1: 0, x2: window.size.w, y2: window.size.h)
 
-  let spriteRect = Rect(center: .zero, size: V2(128, 128))
-  let playerRect = Rect(center: gameState.player.position.translate(for: window), size: V2(Player.width, Player.width))
+  // frame = f(keyfps: keyFramesPerSecond, fps, curFrame) { curFrame / (fps / keyfps) }
+  let x = gameState.player.isMoving ? graphics.frameCounter.frames / (60 / 4) : 0
 
-  try renderer.copy(texture: assetData, sourceRect: spriteRect, destRect: playerRect)
+  let spriteRect: Rect
+  switch gameState.player.facing?.components {
+  case (1, 0)?:
+    spriteRect = characterSpriteSheet.getSpriteRect(for: V2(x, x))
 
-  // switch gameState.player.state {
-  // case .idle:
-  //   try renderer.setDrawColor(rgb: 0x009a49)
-  // case .standing:
-  //   try renderer.setDrawColor(rgb: 0x10aa49)
-  // case .moving(_):
-  //   try renderer.setDrawColor(rgb: 0xaa1010)
-  // }
+  case (-1, 0)?:
+    spriteRect = characterSpriteSheet.getSpriteRect(for: V2(x, x))
 
-  // var rect = Rect(center: translateToRenderer(coordinates: gameState.player.position), size: V2(Double(gameState.player.width), Double(gameState.player.width)))
+  case (0, 1)?:
+    spriteRect = characterSpriteSheet.getSpriteRect(for: V2(x, x))
 
-  // try renderer.fill(rect: &rect)
+  case (0, -1)?:
+    spriteRect = characterSpriteSheet.getSpriteRect(for: V2(x, x))
+
+  case (1, 1)?, (-1, -1)?, (-1, 1)?, (1, -1)?:
+    spriteRect = characterSpriteSheet.getSpriteRect(for: .zero)
+    log.warning("Player moving on 2 axis")
+
+  default:
+    spriteRect = characterSpriteSheet.getSpriteRect(for: .zero)
+  }
+
+  let playerRect = Rect(center: gameState.player.position.translate(for: window), size: V2(Player.width * 2, Player.width * 2))
+
+  try renderer.copy(texture: characterSpriteSheet.texture, sourceRect: spriteRect, destRect: playerRect)
 
   renderer.present()
 }

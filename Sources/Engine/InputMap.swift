@@ -3,7 +3,7 @@ import SDL
 
 import func Darwin.C.exit
 
-public var keyHandler: [((KeyboardEvent, inout GameState) -> Void)?] = Array(repeating: nil, count: Scancode.numScancodes)
+var keyHandler: [((KeyboardEvent, inout GameState) -> Void)?] = Array(repeating: nil, count: Scancode.numScancodes)
 
 typealias Keymap = [Scancode: (KeyboardEvent, inout GameState) -> Void]
 

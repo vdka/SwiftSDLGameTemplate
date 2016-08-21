@@ -1,17 +1,15 @@
 
-public typealias Byte = UInt8
+struct GameState {
 
-public struct GameState {
+  var score: Int
 
-  public var score: Int
+  var shouldQuit: Bool = false
 
-  public var shouldQuit: Bool = false
+  var player: Player
 
-  public var player: Player
+  var timer: Timer = Timer()
 
-  public var timer: Timer = Timer()
-
-  public init(score: Int) {
+  init(score: Int) {
 
     self.score = score
     self.shouldQuit = false

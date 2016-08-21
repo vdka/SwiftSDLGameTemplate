@@ -1,7 +1,9 @@
 
 import SDL
 
-typealias AssetData = (Texture)
+let baseDir = "/" + Array(#file.characters.split(separator: "/").dropLast(3)).map(String.init).joined(separator: "/")
+
+typealias AssetData = (SpriteSheet)
 
 /// Used to persist things between calls to the update function when using dynamic code reload.
 struct Persisted {

@@ -6,4 +6,8 @@ CC=`/usr/local/bin/swiftenv which swift`
 echo "Using $CC"
 export SDKROOT=$(xcrun --show-sdk-path --sdk macosx)
 
-$CC build -Xswiftc -DDebug -Xlinker -L$(pwd)/ && echo "Build Succeeded!" || echo "Build Failed!"
+SWIFTC_FLAGS="-DDebug"
+LINKER_FLAGS="-L$(pwd)/"
+
+$CC build -Xswiftc $SWIFTC_FLAGS -Xlinker $LINKER_FLAGS &&
+  echo "Build Succeeded!" || echo "Build Failed!"

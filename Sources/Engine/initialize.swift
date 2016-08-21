@@ -2,8 +2,6 @@
 import CSDL2
 import SDL
 
-let baseDir = "/" + Array(#file.characters.split(separator: "/").dropLast(3)).map(String.init).joined(separator: "/")
-
 /// Only ever called once when the game is first launched. Use this to set up a state that can be persisted to Raw Memory between reloads of libGameEngine.dylib
 @_silgen_name("load")
 public func initialize() -> UnsafeMutablePointer<Byte>? {
@@ -15,7 +13,9 @@ public func initialize() -> UnsafeMutablePointer<Byte>? {
     // MARK: - Setup
     try SDL.initialize(components: .video)
 
-    let (window, renderer) = try SDL.createWindowAndRenderer(w: 360, h: 360, windowFlags: [.shown])
+    // let (window, renderer) = try SDL.createWindowAndRenderer(w: 360, h: 360, windowFlags: [.shown, .presentVsync])
+    let window = Window.create(titled: "SwiftSDLTemplate", x: 0, y: 0, w: 360, h: 360, flags: [.shown])
+    let renderer = Renderer.create(for: window, flags: [.presentVsync])
 
     window.setPosition(x: Int32.WindowPosition.centered, y: 0)
 
@@ -27,11 +27,11 @@ public func initialize() -> UnsafeMutablePointer<Byte>? {
 
     gameState.player.position = V2(Double(windowX) / 2, Double(windowY) / 2)
 
-    let texture = try Texture.loadBMP(from: baseDir + "/assets/red.bmp", for: renderer)
+    let characterSpriteSheet = try SpriteSheet(path: "/assets/red.bmp", spriteDimentions: V2(64, 64), for: renderer)
 
     // MARK: - Persist
 
-    var persisted = Persisted(graphics: graphics, gameState: gameState, assetData: (texture))
+    var persisted = Persisted(graphics: graphics, gameState: gameState, assetData: (characterSpriteSheet))
 
     let memory = UnsafeMutablePointer<Byte>(allocatingCapacity: sizeofValue(persisted))
 

@@ -54,9 +54,52 @@ public struct Vector2 {
   public var x: Scalar
   public var y: Scalar
 
+  public var components: (Scalar, Scalar) {
+    return (x, y)
+  }
+
   public init(x: Scalar, y: Scalar) {
     self.x = x
     self.y = y
+  }
+}
+
+extension Vector2 {
+
+  public init<A: SignedInteger, B: SignedInteger>(x: A, y: B) {
+    self.x = Double(numericCast(x) | Int64.allZeros)
+    self.y = Double(numericCast(y) | Int64.allZeros)
+  }
+
+  public init<A: SignedInteger, B: SignedInteger>(_ x: A, _ y: B) {
+    self.init(x: x, y: y)
+  }
+
+  public init<A: UnsignedInteger, B: UnsignedInteger>(x: A, y: B) {
+    self.x = Double(numericCast(x) | UInt64.allZeros)
+    self.y = Double(numericCast(y) | UInt64.allZeros)
+  }
+
+  public init<A: UnsignedInteger, B: UnsignedInteger>(_ x: A, _ y: B) {
+    self.init(x: x, y: y)
+  }
+
+  public init<A: UnsignedInteger, B: SignedInteger>(x: A, y: B) {
+    self.x = Double(numericCast(x) | UInt64.allZeros)
+    self.y = Double(numericCast(y) |  Int64.allZeros)
+  }
+
+  public init<A: UnsignedInteger, B: SignedInteger>(_ x: A, _ y: B) {
+    self.init(x: x, y: y)
+  }
+
+  public init<A: SignedInteger, B: UnsignedInteger>(x: A, y: B) {
+    self.x = Double(numericCast(x) |  Int64.allZeros)
+    self.y = Double(numericCast(y) | UInt64.allZeros)
+  }
+
+  public init<A: SignedInteger, B: UnsignedInteger>(_ x: A, _ y: B) {
+    self.init(x: x, y: y)
   }
 }
 
@@ -157,7 +200,9 @@ extension Vector2: Equatable, Hashable {
   public func rotated(by radians: Scalar) -> Vector2 {
     let cs = cos(radians)
     let sn = sin(radians)
-    return Vector2(x * cs - y * sn, x * sn + y * cs)
+    let dx: Double = x * cs - y * sn
+    let dy: Double = x * sn + y * cs
+    return Vector2(dx, dy)
   }
 
   public func rotated(by radians: Scalar, around pivot: Vector2) -> Vector2 {

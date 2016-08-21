@@ -39,7 +39,7 @@ extension Graphics {
 
       let currentTick = SDL_GetTicks()
       guard currentTick > updateFrequency else { return nil }
-      if currentTick - updateFrequency < lastUpdateTick {
+      if currentTick - updateFrequency <= lastUpdateTick {
         frames += 1
         return nil
       }
